@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Activity Logs</h3>
+  </div>
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>User ID</th>
+          <th>Module</th>
+          <th>Aksi</th>
+          <th>Status</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!logs || !logs.length) { %>
+        <tr>
+          <td colspan="6" class="text-center">Belum ada log aktivitas</td>
+        </tr>
+        <% } else { %>
+        <% logs.forEach(function(log) { %>
+        <tr>
+          <td><%= new Date(log.created_at).toLocaleString('id-ID') %></td>
+          <td><%= log.user_id || '-' %></td>
+          <td><%= log.module %></td>
+          <td><%= log.action_type %></td>
+          <td><span class="badge"><%= log.status %></span></td>
+          <td><%= log.description %></td>
+        </tr>
+        <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

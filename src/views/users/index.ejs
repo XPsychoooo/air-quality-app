@@ -1,0 +1,72 @@
+<div class="grid-2cols gap-lg align-start">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Daftar Pengguna</h3>
+    </div>
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!users || !users.length) { %>
+          <tr>
+            <td colspan="5" class="text-center">Belum ada pengguna</td>
+          </tr>
+          <% } else { %>
+          <% users.forEach(function(u) { %>
+          <tr>
+            <td><%= u.full_name %></td>
+            <td><%= u.email %></td>
+            <td><%= u.username %></td>
+            <td><span class="badge"><%= u.role %></span></td>
+            <td><%= u.is_active ? 'Aktif' : 'Nonaktif' %></td>
+          </tr>
+          <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Tambah Pengguna</h3>
+    </div>
+    <form method="post" action="/users" class="form-vertical">
+      <label>
+        <span>Nama Lengkap</span>
+        <input type="text" name="full_name" required />
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        <span>Username</span>
+        <input type="text" name="username" required />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" required />
+      </label>
+      <label>
+        <span>Role</span>
+        <select name="role">
+          <option value="SUPER_ADMIN">Super Admin</option>
+          <option value="ADMIN_TAMBANG">Admin Tambang</option>
+          <option value="OPERATOR" selected>Operator</option>
+          <option value="VIEWER">Viewer</option>
+        </select>
+      </label>
+      <button type="submit" class="btn-primary w-full">Simpan</button>
+    </form>
+  </div>
+</div>
+
