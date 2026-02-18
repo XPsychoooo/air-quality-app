@@ -7,50 +7,71 @@ const ROLES_ROOT = "roles";
 const DEFAULT_ROLES = [
     {
         role_name: "SUPER_ADMIN",
-        description: "Administrator utama dengan akses penuh ke semua fitur sistem",
+        description: "Akses penuh ke seluruh sistem. Dapat mengelola pengguna, sensor, dan konfigurasi sistem. Dapat mengekspor dan menghapus data.",
         permissions: JSON.stringify({
             dashboard: true,
             monitoring: true,
             users: { read: true, create: true, update: true, delete: true },
             roles: { read: true, create: true, update: true, delete: true },
+            sensors: { read: true, create: true, update: true, delete: true },
             logs: true,
-            settings: true
+            settings: true,
+            export_data: true,
+            delete_data: true,
+            reports: { view: true, create: true, export: true },
+            config: true
         })
     },
     {
         role_name: "ADMIN_TAMBANG",
-        description: "Administrator tambang dengan akses manajemen pengguna dan monitoring",
+        description: "Akses ke dashboard monitoring. Dapat melihat dan mengekspor laporan. Dapat mengelola sensor di area tambang. Tidak dapat menghapus data historis.",
         permissions: JSON.stringify({
             dashboard: true,
             monitoring: true,
             users: { read: true, create: true, update: true, delete: false },
             roles: { read: true, create: false, update: false, delete: false },
+            sensors: { read: true, create: true, update: true, delete: false },
             logs: true,
-            settings: false
+            settings: false,
+            export_data: true,
+            delete_data: false,
+            reports: { view: true, create: true, export: true },
+            config: false
         })
     },
     {
         role_name: "OPERATOR",
-        description: "Operator lapangan yang mengelola perangkat sensor dan data monitoring",
+        description: "Akses ke dashboard monitoring (read-only). Dapat melihat data real-time dan historis. Dapat membuat laporan. Tidak dapat mengubah konfigurasi.",
         permissions: JSON.stringify({
             dashboard: true,
             monitoring: true,
             users: { read: false, create: false, update: false, delete: false },
             roles: { read: false, create: false, update: false, delete: false },
+            sensors: { read: true, create: false, update: false, delete: false },
             logs: false,
-            settings: false
+            settings: false,
+            export_data: false,
+            delete_data: false,
+            reports: { view: true, create: true, export: false },
+            config: false
         })
     },
     {
         role_name: "VIEWER",
-        description: "Pengguna yang hanya dapat melihat data dashboard dan monitoring",
+        description: "Akses terbatas ke dashboard publik. Hanya dapat melihat data kualitas udara. Tidak dapat mengekspor atau membuat laporan.",
         permissions: JSON.stringify({
             dashboard: true,
             monitoring: true,
             users: { read: false, create: false, update: false, delete: false },
             roles: { read: false, create: false, update: false, delete: false },
+            sensors: { read: false, create: false, update: false, delete: false },
             logs: false,
-            settings: false
+            settings: false,
+            export_data: false,
+            delete_data: false,
+            reports: { view: false, create: false, export: false },
+            config: false,
+            public_dashboard_only: true
         })
     }
 ];
@@ -99,11 +120,20 @@ async function seedDefaultRoles() {
     const snapshot = await db.ref(ROLES_ROOT).get();
 
     if (snapshot.exists()) {
-        const existing = Object.values(snapshot.val());
-        const existingNames = existing.map(r => r.role_name);
+        const existing = Object.entries(snapshot.val());
 
         for (const role of DEFAULT_ROLES) {
-            if (!existingNames.includes(role.role_name)) {
+            const found = existing.find(([, r]) => r.role_name === role.role_name);
+            if (found) {
+                // Update existing role with latest description & permissions
+                const [id] = found;
+                await db.ref(`${ROLES_ROOT}/${id}`).update({
+                    description: role.description,
+                    permissions: role.permissions,
+                    updated_at: Date.now(),
+                });
+                console.log(`Updated role: ${role.role_name}`);
+            } else {
                 await createRole(role);
                 console.log(`Seeded role: ${role.role_name}`);
             }
