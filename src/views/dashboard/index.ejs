@@ -7,25 +7,34 @@
 
     <div class="location-selector">
       <label class="location-label">Lokasi: Tanjung Selor</label>
-      <select class="location-dropdown" id="deviceSelect" onchange="window.location.href='/dashboard?deviceId='+this.value">
-        <option value="tanjung-selor-device-1" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-1') ? 'selected' : '' %>>Tanjung Selor - Device 1</option>
-        <option value="tanjung-selor-device-2" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-2') ? 'selected' : '' %>>Tanjung Selor - Device 2</option>
-        <option value="tanjung-selor-device-3" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-3') ? 'selected' : '' %>>Tanjung Selor - Device 3</option>
+      <select class="location-dropdown" id="deviceSelect"
+        onchange="window.location.href='/dashboard?deviceId='+this.value">
+        <option value="tanjung-selor-device-1" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-1'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 1</option>
+        <option value="tanjung-selor-device-2" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-2'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 2</option>
+        <option value="tanjung-selor-device-3" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-3'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 3</option>
       </select>
     </div>
 
     <div class="aqi-display">
       <div class="aqi-circle">
-        <div class="aqi-value"><%= latest ? Math.round(latest.pm25) : '--' %></div>
+        <div class="aqi-value">
+          <%= latest ? Math.round(latest.pm25) : '--' %>
+        </div>
         <div class="aqi-label">PM2.5 μg/m³</div>
       </div>
       <div class="aqi-info">
-        <div class="aqi-status"><%= latest ? (latest.status || 'UNKNOWN') : 'NO DATA' %></div>
+        <div class="aqi-status">
+          <%= latest ? (latest.status || 'UNKNOWN' ) : 'NO DATA' %>
+        </div>
         <% if (latest) { %>
-        <div class="aqi-timestamp">Terakhir: <%= new Date(latest.timestamp).toLocaleString('id-ID') %></div>
-        <% } else { %>
-        <div class="aqi-timestamp">Belum ada data</div>
-        <% } %>
+          <div class="aqi-timestamp">Terakhir: <%= new Date(latest.timestamp).toLocaleString('id-ID') %>
+          </div>
+          <% } else { %>
+            <div class="aqi-timestamp">Belum ada data</div>
+            <% } %>
       </div>
     </div>
   </div>
@@ -38,15 +47,21 @@
     <div class="summary-grid">
       <div class="summary-item">
         <div class="summary-label">PM2.5 (μg/m³)</div>
-        <div class="summary-value"><%= (latest && latest.pm25 != null) ? latest.pm25.toFixed(1) : '--' %></div>
+        <div class="summary-value">
+          <%= (latest && latest.pm25 !=null) ? latest.pm25.toFixed(1) : '--' %>
+        </div>
       </div>
       <div class="summary-item">
         <div class="summary-label">PM10 (μg/m³)</div>
-        <div class="summary-value"><%= (latest && latest.pm10 != null) ? latest.pm10.toFixed(1) : '--' %></div>
+        <div class="summary-value">
+          <%= (latest && latest.pm10 !=null) ? latest.pm10.toFixed(1) : '--' %>
+        </div>
       </div>
       <div class="summary-item">
         <div class="summary-label">Data Terbaca</div>
-        <div class="summary-value"><%= (measurements && measurements.length) ? measurements.length : 0 %></div>
+        <div class="summary-value">
+          <%= (measurements && measurements.length) ? measurements.length : 0 %>
+        </div>
       </div>
     </div>
   </div>
@@ -58,94 +73,94 @@
     <h3 class="card-title">Tren PM2.5 & PM10</h3>
   </div>
   <div class="chart-container">
-    <canvas id="trendChart"></canvas>
+    <canvas id="trendChart" data-measurements="<%= JSON.stringify(measurements || []) %>"></canvas>
   </div>
 </div>
 
 <script>
-(function() {
-  const raw = <%- JSON.stringify(measurements || []) %>;
-  const labels = raw
-    .map(function(m) { return new Date(m.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); })
-    .reverse();
-  const pm25Data = raw.map(function(m) { return m.pm25; }).reverse();
-  const pm10Data = raw.map(function(m) { return m.pm10; }).reverse();
+  (function () {
+    const raw = JSON.parse(document.getElementById('trendChart').getAttribute('data-measurements'));
+    const labels = raw
+      .map(function (m) { return new Date(m.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); })
+      .reverse();
+    const pm25Data = raw.map(function (m) { return m.pm25; }).reverse();
+    const pm10Data = raw.map(function (m) { return m.pm10; }).reverse();
 
-  const ctx = document.getElementById('trendChart');
-  if (!ctx) return;
+    const ctx = document.getElementById('trendChart');
+    if (!ctx) return;
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels.length ? labels : Array.from({length: 10}, (_, i) => (i + 1).toString()),
-      datasets: [
-        {
-          label: 'PM2.5',
-          data: pm25Data.length ? pm25Data : [0],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 6
-        },
-        {
-          label: 'PM10',
-          data: pm10Data.length ? pm10Data : [0],
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 6
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          align: 'end',
-          labels: {
-            color: '#94a3b8',
-            usePointStyle: true,
-            padding: 20,
-            font: { size: 13, weight: '600' }
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels.length ? labels : Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
+        datasets: [
+          {
+            label: 'PM2.5',
+            data: pm25Data.length ? pm25Data : [0],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 6
+          },
+          {
+            label: 'PM10',
+            data: pm10Data.length ? pm10Data : [0],
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 6
           }
-        },
-        tooltip: {
-          backgroundColor: '#1e293b',
-          titleColor: '#f8fafc',
-          bodyColor: '#94a3b8',
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          borderWidth: 1,
-          padding: 12,
-          displayColors: true,
-          callbacks: {
-            label: function(context) {
-              return context.dataset.label + ': ' + context.parsed.y + ' μg/m³';
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'end',
+            labels: {
+              color: '#94a3b8',
+              usePointStyle: true,
+              padding: 20,
+              font: { size: 13, weight: '600' }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            titleColor: '#f8fafc',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: true,
+            callbacks: {
+              label: function (context) {
+                return context.dataset.label + ': ' + context.parsed.y + ' μg/m³';
+              }
             }
           }
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-          ticks: { color: '#64748b', font: { size: 11 }, maxTicksLimit: 15 }
         },
-        y: {
-          grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-          ticks: { color: '#64748b', font: { size: 11 } },
-          beginAtZero: true
-        }
-      },
-      interaction: { intersect: false, mode: 'index' }
-    }
-  });
-})();
+        scales: {
+          x: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+            ticks: { color: '#64748b', font: { size: 11 }, maxTicksLimit: 15 }
+          },
+          y: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+            ticks: { color: '#64748b', font: { size: 11 } },
+            beginAtZero: true
+          }
+        },
+        interaction: { intersect: false, mode: 'index' }
+      }
+    });
+  })();
 </script>
