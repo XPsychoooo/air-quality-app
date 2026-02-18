@@ -19,7 +19,7 @@ async function findUserByEmailOrUsername(identifier) {
   return null;
 }
 
-async function createUser({ email, username, password, full_name, role = "OPERATOR" }) {
+async function createUser({ email, username, password, full_name, role = "OPERATOR", phone_number = null, organization = null }) {
   const db = getDatabase();
   const id = uuidv4();
   const password_hash = await bcrypt.hash(password, 10);
@@ -29,9 +29,14 @@ async function createUser({ email, username, password, full_name, role = "OPERAT
     username,
     password_hash,
     full_name,
+    phone_number: phone_number || null,
+    organization: organization || null,
     role,
     is_active: true,
+    email_verified: false,
     created_at: Date.now(),
+    updated_at: Date.now(),
+    last_login: null,
   };
 
   await db.ref(`${USERS_ROOT}/${id}`).set(data);

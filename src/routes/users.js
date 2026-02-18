@@ -36,10 +36,10 @@ router.post(
   roleRequired(["SUPER_ADMIN", "ADMIN_TAMBANG"]),
   activityLogger("USER"),
   async (req, res) => {
-    const { email, username, full_name, password, role } = req.body;
+    const { email, username, full_name, password, role, phone_number, organization } = req.body;
 
     try {
-      await createUser({ email, username, full_name, password, role });
+      await createUser({ email, username, full_name, password, role, phone_number, organization });
       res.redirect("/users");
     } catch (err) {
       console.error("Error create user:", err);
