@@ -1,0 +1,25 @@
+<div class="card" style="max-width: 600px;">
+    <div class="card-header">
+        <h3 class="card-title">Edit Role</h3>
+    </div>
+    <form method="post" action="/roles/<%= editRole.role_id %>/update" class="form-vertical">
+        <label>
+            <span>Nama Role</span>
+            <input type="text" name="role_name" value="<%= editRole.role_name %>" required />
+        </label>
+        <label>
+            <span>Deskripsi</span>
+            <input type="text" name="description" value="<%= editRole.description || '' %>" />
+        </label>
+        <label>
+            <span>Permissions (JSON)</span>
+            <textarea name="permissions" rows="8"
+                style="width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--border-color); font-family:monospace; font-size:13px; resize:vertical;"><%= editRole.permissions || '{}' %></textarea>
+        </label>
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button type="submit" class="btn-primary" style="flex:1;">Simpan</button>
+            <a href="/roles" class="btn-primary"
+                style="flex:1; text-align:center; text-decoration:none; background:linear-gradient(135deg,#64748b,#94a3b8);">Batal</a>
+        </div>
+    </form>
+</div>

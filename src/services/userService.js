@@ -19,6 +19,13 @@ async function findUserByEmailOrUsername(identifier) {
   return null;
 }
 
+async function getUserById(id) {
+  const db = getDatabase();
+  const snapshot = await db.ref(`${USERS_ROOT}/${id}`).get();
+  if (!snapshot.exists()) return null;
+  return { id, ...snapshot.val() };
+}
+
 async function createUser({ email, username, password, full_name, role = "OPERATOR", phone_number = null, organization = null }) {
   const db = getDatabase();
   const id = uuidv4();
@@ -43,6 +50,43 @@ async function createUser({ email, username, password, full_name, role = "OPERAT
   return { id, ...data };
 }
 
+async function updateUser(id, updates) {
+  const db = getDatabase();
+  const ref = db.ref(`${USERS_ROOT}/${id}`);
+  const snapshot = await ref.get();
+  if (!snapshot.exists()) return null;
+
+  const updateData = {
+    updated_at: Date.now(),
+  };
+
+  if (updates.full_name !== undefined) updateData.full_name = updates.full_name;
+  if (updates.email !== undefined) updateData.email = updates.email;
+  if (updates.username !== undefined) updateData.username = updates.username;
+  if (updates.phone_number !== undefined) updateData.phone_number = updates.phone_number || null;
+  if (updates.organization !== undefined) updateData.organization = updates.organization || null;
+  if (updates.role !== undefined) updateData.role = updates.role;
+  if (updates.is_active !== undefined) updateData.is_active = updates.is_active;
+  if (updates.email_verified !== undefined) updateData.email_verified = updates.email_verified;
+
+  // If password is provided, hash it
+  if (updates.password && updates.password.trim()) {
+    updateData.password_hash = await bcrypt.hash(updates.password, 10);
+  }
+
+  await ref.update(updateData);
+  return { id, ...snapshot.val(), ...updateData };
+}
+
+async function deleteUser(id) {
+  const db = getDatabase();
+  const ref = db.ref(`${USERS_ROOT}/${id}`);
+  const snapshot = await ref.get();
+  if (!snapshot.exists()) return false;
+  await ref.remove();
+  return true;
+}
+
 async function listUsers() {
   const db = getDatabase();
   const snapshot = await db.ref(USERS_ROOT).get();
@@ -56,7 +100,9 @@ async function listUsers() {
 
 module.exports = {
   findUserByEmailOrUsername,
+  getUserById,
   createUser,
+  updateUser,
+  deleteUser,
   listUsers,
 };
-

@@ -17,12 +17,13 @@
             <th>Email Verified</th>
             <th>Dibuat</th>
             <th>Login Terakhir</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
           <% if (!users || !users.length) { %>
             <tr>
-              <td colspan="10" class="text-center">Belum ada pengguna</td>
+              <td colspan="11" class="text-center">Belum ada pengguna</td>
             </tr>
             <% } else { %>
               <% users.forEach(function(u) { %>
@@ -56,6 +57,13 @@
                   </td>
                   <td>
                     <%= u.last_login ? new Date(u.last_login).toLocaleString('id-ID') : '-' %>
+                  </td>
+                  <td style="white-space: nowrap;">
+                    <a href="/users/<%= u.id %>/edit" class="btn-action btn-edit" title="Edit">✏️</a>
+                    <form method="post" action="/users/<%= u.id %>/delete" style="display:inline;"
+                      onsubmit="return confirm('Yakin hapus pengguna ini?')">
+                      <button type="submit" class="btn-action btn-delete" title="Hapus">🗑️</button>
+                    </form>
                   </td>
                 </tr>
                 <% }) %>
@@ -103,10 +111,7 @@
               </option>
               <% }) %>
                 <% } else { %>
-                  <option value="SUPER_ADMIN">Super Admin</option>
-                  <option value="ADMIN_TAMBANG">Admin Tambang</option>
                   <option value="OPERATOR" selected>Operator</option>
-                  <option value="VIEWER">Viewer</option>
                   <% } %>
         </select>
       </label>

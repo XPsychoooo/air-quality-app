@@ -1,12 +1,17 @@
 <div class="card">
   <div class="card-header">
     <h3 class="card-title">Monitoring Data Kualitas Udara</h3>
-    <div class="card-actions">
+    <div class="card-actions" style="display:flex; gap:12px; align-items:center;">
       <select style="max-width: 220px;" onchange="window.location.href='/monitoring?deviceId='+this.value">
-        <option value="tanjung-selor-device-1" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-1') ? 'selected' : '' %>>Tanjung Selor - Device 1</option>
-        <option value="tanjung-selor-device-2" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-2') ? 'selected' : '' %>>Tanjung Selor - Device 2</option>
-        <option value="tanjung-selor-device-3" <%= (typeof deviceId !== 'undefined' && deviceId === 'tanjung-selor-device-3') ? 'selected' : '' %>>Tanjung Selor - Device 3</option>
+        <option value="tanjung-selor-device-1" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-1'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 1</option>
+        <option value="tanjung-selor-device-2" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-2'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 2</option>
+        <option value="tanjung-selor-device-3" <%=(typeof deviceId !=='undefined' && deviceId==='tanjung-selor-device-3'
+          ) ? 'selected' : '' %>>Tanjung Selor - Device 3</option>
       </select>
+      <a href="/export/monitoring?deviceId=<%= typeof deviceId !== 'undefined' ? deviceId : 'tanjung-selor-device-1' %>"
+        class="btn-secondary">📥 Export CSV</a>
     </div>
   </div>
   <div class="table-wrapper">
@@ -22,22 +27,31 @@
       </thead>
       <tbody>
         <% if (!measurements || !measurements.length) { %>
-        <tr>
-          <td colspan="5" class="text-center">Belum ada data</td>
-        </tr>
-        <% } else { %>
-        <% measurements.forEach(function(m) { %>
-        <tr>
-          <td><%= new Date(m.timestamp).toLocaleString('id-ID') %></td>
-          <td><%= m.location || 'Tanjung Selor' %></td>
-          <td><%= m.pm25 %></td>
-          <td><%= m.pm10 %></td>
-          <td><span class="badge"><%= m.status || 'UNKNOWN' %></span></td>
-        </tr>
-        <% }) %>
-        <% } %>
+          <tr>
+            <td colspan="5" class="text-center">Belum ada data</td>
+          </tr>
+          <% } else { %>
+            <% measurements.forEach(function(m) { %>
+              <tr>
+                <td>
+                  <%= new Date(m.timestamp).toLocaleString('id-ID') %>
+                </td>
+                <td>
+                  <%= m.location || 'Tanjung Selor' %>
+                </td>
+                <td>
+                  <%= m.pm25 %>
+                </td>
+                <td>
+                  <%= m.pm10 %>
+                </td>
+                <td><span class="badge">
+                    <%= m.status || 'UNKNOWN' %>
+                  </span></td>
+              </tr>
+              <% }) %>
+                <% } %>
       </tbody>
     </table>
   </div>
 </div>
-

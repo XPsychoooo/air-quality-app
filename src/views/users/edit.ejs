@@ -1,0 +1,62 @@
+<div class="card" style="max-width: 600px;">
+    <div class="card-header">
+        <h3 class="card-title">Edit Pengguna</h3>
+    </div>
+    <form method="post" action="/users/<%= editUser.id %>/update" class="form-vertical">
+        <label>
+            <span>Nama Lengkap</span>
+            <input type="text" name="full_name" value="<%= editUser.full_name %>" required />
+        </label>
+        <label>
+            <span>Email</span>
+            <input type="email" name="email" value="<%= editUser.email %>" required />
+        </label>
+        <label>
+            <span>Username</span>
+            <input type="text" name="username" value="<%= editUser.username %>" required />
+        </label>
+        <label>
+            <span>Password Baru (kosongkan jika tidak diubah)</span>
+            <input type="password" name="password" placeholder="Opsional" />
+        </label>
+        <label>
+            <span>Nomor Telepon</span>
+            <input type="tel" name="phone_number" value="<%= editUser.phone_number || '' %>" placeholder="Opsional" />
+        </label>
+        <label>
+            <span>Organisasi</span>
+            <input type="text" name="organization" value="<%= editUser.organization || '' %>" placeholder="Opsional" />
+        </label>
+        <label>
+            <span>Role</span>
+            <select name="role">
+                <% if (typeof roles !=='undefined' && roles.length) { %>
+                    <% roles.forEach(function(r) { %>
+                        <option value="<%= r.role_name %>" <%=editUser.role===r.role_name ? 'selected' : '' %>><%=
+                                r.role_name %>
+                        </option>
+                        <% }) %>
+                            <% } %>
+            </select>
+        </label>
+        <label>
+            <span>Status</span>
+            <select name="is_active">
+                <option value="true" <%=editUser.is_active ? 'selected' : '' %>>Aktif</option>
+                <option value="false" <%=!editUser.is_active ? 'selected' : '' %>>Nonaktif</option>
+            </select>
+        </label>
+        <label>
+            <span>Email Verified</span>
+            <select name="email_verified">
+                <option value="true" <%=editUser.email_verified ? 'selected' : '' %>>Verified</option>
+                <option value="false" <%=!editUser.email_verified ? 'selected' : '' %>>Belum</option>
+            </select>
+        </label>
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button type="submit" class="btn-primary" style="flex:1;">Simpan</button>
+            <a href="/users" class="btn-primary"
+                style="flex:1; text-align:center; text-decoration:none; background:linear-gradient(135deg,#64748b,#94a3b8);">Batal</a>
+        </div>
+    </form>
+</div>

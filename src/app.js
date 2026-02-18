@@ -10,6 +10,7 @@ const userRoutes = require("./routes/users");
 const logRoutes = require("./routes/logs");
 const settingsRoutes = require("./routes/settings");
 const rolesRoutes = require("./routes/roles");
+const exportRoutes = require("./routes/export");
 const apiRoutes = require("./routes/api");
 const { authRequired } = require("./middleware/authMiddleware");
 
@@ -56,6 +57,7 @@ app.use(userRoutes);
 app.use(logRoutes);
 app.use(settingsRoutes);
 app.use(rolesRoutes);
+app.use(exportRoutes);
 
 // API routes
 app.use("/api", apiRoutes);

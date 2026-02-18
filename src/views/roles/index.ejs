@@ -13,12 +13,13 @@
                         <th>Permissions</th>
                         <th>Dibuat</th>
                         <th>Diperbarui</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% if (!roles || !roles.length) { %>
                         <tr>
-                            <td colspan="6" class="text-center">Belum ada role</td>
+                            <td colspan="7" class="text-center">Belum ada role</td>
                         </tr>
                         <% } else { %>
                             <% roles.forEach(function(r) { %>
@@ -29,7 +30,7 @@
                                     <td><span class="badge badge-info">
                                             <%= r.role_name %>
                                         </span></td>
-                                    <td>
+                                    <td style="max-width: 250px; font-size: 13px;">
                                         <%= r.description || '-' %>
                                     </td>
                                     <td
@@ -41,6 +42,15 @@
                                     </td>
                                     <td>
                                         <%= r.updated_at ? new Date(r.updated_at).toLocaleDateString('id-ID') : '-' %>
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <a href="/roles/<%= r.role_id %>/edit" class="btn-action btn-edit"
+                                            title="Edit">✏️</a>
+                                        <form method="post" action="/roles/<%= r.role_id %>/delete"
+                                            style="display:inline;" onsubmit="return confirm('Yakin hapus role ini?')">
+                                            <button type="submit" class="btn-action btn-delete"
+                                                title="Hapus">🗑️</button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <% }) %>

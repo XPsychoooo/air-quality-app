@@ -115,6 +115,30 @@ async function createRole({ role_name, description = null, permissions = "{}" })
     return { role_id, ...data };
 }
 
+async function updateRole(roleId, updates) {
+    const db = getDatabase();
+    const ref = db.ref(`${ROLES_ROOT}/${roleId}`);
+    const snapshot = await ref.get();
+    if (!snapshot.exists()) return null;
+
+    const updateData = { updated_at: Date.now() };
+    if (updates.role_name !== undefined) updateData.role_name = updates.role_name;
+    if (updates.description !== undefined) updateData.description = updates.description || null;
+    if (updates.permissions !== undefined) updateData.permissions = updates.permissions || "{}";
+
+    await ref.update(updateData);
+    return { role_id: roleId, ...snapshot.val(), ...updateData };
+}
+
+async function deleteRole(roleId) {
+    const db = getDatabase();
+    const ref = db.ref(`${ROLES_ROOT}/${roleId}`);
+    const snapshot = await ref.get();
+    if (!snapshot.exists()) return false;
+    await ref.remove();
+    return true;
+}
+
 async function seedDefaultRoles() {
     const db = getDatabase();
     const snapshot = await db.ref(ROLES_ROOT).get();
@@ -151,5 +175,7 @@ module.exports = {
     getRoleById,
     getRoleByName,
     createRole,
+    updateRole,
+    deleteRole,
     seedDefaultRoles,
 };
