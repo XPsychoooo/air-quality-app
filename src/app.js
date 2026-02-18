@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const userRoutes = require("./routes/users");
 const logRoutes = require("./routes/logs");
+const settingsRoutes = require("./routes/settings");
 const apiRoutes = require("./routes/api");
 const { authRequired } = require("./middleware/authMiddleware");
 
@@ -48,6 +49,7 @@ app.get("/", authRequired, (req, res) => {
 app.use(dashboardRoutes);
 app.use(userRoutes);
 app.use(logRoutes);
+app.use(settingsRoutes);
 
 // API routes
 app.use("/api", apiRoutes);

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Monitoring Polusi Udara</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,23 +15,40 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* City silhouette background */
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 120' fill='rgba(255,255,255,0.05)'%3E%3Crect x='20' y='50' width='40' height='70'/%3E%3Crect x='70' y='20' width='25' height='100'/%3E%3Crect x='100' y='60' width='50' height='60'/%3E%3Crect x='160' y='10' width='20' height='110'/%3E%3Crect x='190' y='40' width='55' height='80'/%3E%3Crect x='260' y='25' width='30' height='95'/%3E%3Crect x='300' y='55' width='40' height='65'/%3E%3Crect x='350' y='8' width='22' height='112'/%3E%3Crect x='380' y='35' width='50' height='85'/%3E%3Crect x='440' y='50' width='35' height='70'/%3E%3Crect x='490' y='15' width='28' height='105'/%3E%3Crect x='530' y='45' width='45' height='75'/%3E%3Crect x='590' y='22' width='25' height='98'/%3E%3Crect x='625' y='55' width='38' height='65'/%3E%3Crect x='675' y='12' width='20' height='108'/%3E%3Crect x='705' y='38' width='50' height='82'/%3E%3Crect x='770' y='48' width='35' height='72'/%3E%3Crect x='820' y='18' width='28' height='102'/%3E%3Crect x='860' y='42' width='45' height='78'/%3E%3Crect x='920' y='30' width='30' height='90'/%3E%3Crect x='960' y='55' width='35' height='65'/%3E%3C/svg%3E") no-repeat center bottom;
+            background-size: 100% auto;
+            pointer-events: none;
         }
 
         .login-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 420px;
             padding: 40px;
             animation: slideUp 0.5s ease-out;
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes slideUp {
@@ -36,6 +56,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -47,15 +68,30 @@
             margin-bottom: 35px;
         }
 
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
         .login-header h1 {
-            color: #333;
+            color: #1e293b;
             font-size: 28px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
         .login-header p {
-            color: #666;
+            color: #64748b;
             font-size: 14px;
         }
 
@@ -65,25 +101,27 @@
 
         .form-group label {
             display: block;
-            color: #555;
+            color: #475569;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
         .input-wrapper input {
             width: 100%;
             padding: 14px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 15px;
+            font-family: inherit;
             transition: all 0.3s ease;
             outline: none;
+            color: #1e293b;
         }
 
         .input-wrapper input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
         .forgot-password {
@@ -92,15 +130,20 @@
         }
 
         .forgot-password a {
-            color: #667eea;
+            color: #3b82f6;
             text-decoration: none;
             font-size: 13px;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            color: #2563eb;
         }
 
         .login-button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -109,18 +152,19 @@
             cursor: pointer;
             margin-top: 10px;
             transition: all 0.3s ease;
+            font-family: inherit;
         }
 
         .login-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(30, 58, 95, 0.3);
         }
 
         .divider {
             display: flex;
             align-items: center;
             margin: 25px 0;
-            color: #999;
+            color: #94a3b8;
             font-size: 13px;
         }
 
@@ -129,7 +173,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: #e0e0e0;
+            background: #e2e8f0;
         }
 
         .divider span {
@@ -138,14 +182,18 @@
 
         .register-link {
             text-align: center;
-            color: #666;
+            color: #64748b;
             font-size: 14px;
         }
 
         .register-link a {
-            color: #667eea;
+            color: #3b82f6;
             text-decoration: none;
             font-weight: 600;
+        }
+
+        .register-link a:hover {
+            color: #2563eb;
         }
 
         .alert {
@@ -156,59 +204,68 @@
         }
 
         .alert.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
         }
 
         .alert.success {
-            background-color: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-header">
+            <div class="login-logo">AQ</div>
             <h1>Selamat Datang</h1>
             <p>Monitoring Polusi Udara · Tanjung Selor</p>
         </div>
 
-        <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert error"><%= error %></div>
-        <% } %>
-
-        <% if (typeof message !== 'undefined' && message) { %>
-            <div class="alert success"><%= message %></div>
-        <% } %>
-
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <label for="identifier">Email atau Username</label>
-                <div class="input-wrapper">
-                    <input type="text" id="identifier" name="identifier" placeholder="Masukkan email atau username" required autofocus>
-                </div>
+        <% if (typeof error !=='undefined' && error) { %>
+            <div class="alert error">
+                <%= error %>
             </div>
+            <% } %>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Masukkan password" required>
-                </div>
-                <div class="forgot-password">
-                    <a href="/forgot-password">Lupa password?</a>
-                </div>
-            </div>
+                <% if (typeof message !=='undefined' && message) { %>
+                    <div class="alert success">
+                        <%= message %>
+                    </div>
+                    <% } %>
 
-            <button type="submit" class="login-button">Login</button>
-        </form>
+                        <form action="/login" method="POST">
+                            <div class="form-group">
+                                <label for="identifier">Email atau Username</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="identifier" name="identifier"
+                                        placeholder="Masukkan email atau username" required autofocus>
+                                </div>
+                            </div>
 
-        <div class="divider"><span>atau</span></div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <div class="input-wrapper">
+                                    <input type="password" id="password" name="password" placeholder="Masukkan password"
+                                        required>
+                                </div>
+                                <div class="forgot-password">
+                                    <a href="/forgot-password">Lupa password?</a>
+                                </div>
+                            </div>
 
-        <div class="register-link">
-            Belum punya akun? <a href="/register">Daftar sekarang</a>
-        </div>
+                            <button type="submit" class="login-button">Login</button>
+                        </form>
+
+                        <div class="divider"><span>atau</span></div>
+
+                        <div class="register-link">
+                            Belum punya akun? <a href="/register">Daftar sekarang</a>
+                        </div>
     </div>
 </body>
+
 </html>
