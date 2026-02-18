@@ -42,7 +42,7 @@
                   <td>
                     <%= u.organization || '-' %>
                   </td>
-                  <td><span class="badge">
+                  <td><span class="badge badge-info">
                       <%= u.role %>
                     </span></td>
                   <td><span class="badge <%= u.is_active ? '' : 'badge-danger' %>">
@@ -97,10 +97,17 @@
       <label>
         <span>Role</span>
         <select name="role">
-          <option value="SUPER_ADMIN">Super Admin</option>
-          <option value="ADMIN_TAMBANG">Admin Tambang</option>
-          <option value="OPERATOR" selected>Operator</option>
-          <option value="VIEWER">Viewer</option>
+          <% if (typeof roles !=='undefined' && roles.length) { %>
+            <% roles.forEach(function(r) { %>
+              <option value="<%= r.role_name %>" <%=r.role_name==='OPERATOR' ? 'selected' : '' %>><%= r.role_name %>
+              </option>
+              <% }) %>
+                <% } else { %>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                  <option value="ADMIN_TAMBANG">Admin Tambang</option>
+                  <option value="OPERATOR" selected>Operator</option>
+                  <option value="VIEWER">Viewer</option>
+                  <% } %>
         </select>
       </label>
       <button type="submit" class="btn-primary w-full">Simpan</button>

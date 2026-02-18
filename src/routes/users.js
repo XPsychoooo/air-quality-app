@@ -2,6 +2,7 @@ const express = require("express");
 const { authRequired, roleRequired } = require("../middleware/authMiddleware");
 const { activityLogger } = require("../middleware/logMiddleware");
 const { listUsers, createUser } = require("../services/userService");
+const { listRoles } = require("../services/roleService");
 
 const router = express.Router();
 
@@ -13,10 +14,12 @@ router.get(
   async (req, res) => {
     try {
       const users = await listUsers();
+      const roles = await listRoles();
       res.render("users/index", {
         title: "Manajemen Pengguna",
         user: req.user,
         users,
+        roles,
       });
     } catch (err) {
       console.error("Error list users:", err);
@@ -24,6 +27,7 @@ router.get(
         title: "Manajemen Pengguna",
         user: req.user,
         users: [],
+        roles: [],
         error: "Gagal memuat pengguna",
       });
     }
@@ -49,4 +53,3 @@ router.post(
 );
 
 module.exports = router;
-

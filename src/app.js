@@ -9,11 +9,16 @@ const dashboardRoutes = require("./routes/dashboard");
 const userRoutes = require("./routes/users");
 const logRoutes = require("./routes/logs");
 const settingsRoutes = require("./routes/settings");
+const rolesRoutes = require("./routes/roles");
 const apiRoutes = require("./routes/api");
 const { authRequired } = require("./middleware/authMiddleware");
 
 // Pastikan Firebase terinisialisasi di awal
 require("./config/firebase").initFirebase();
+
+// Seed default roles
+const { seedDefaultRoles } = require("./services/roleService");
+seedDefaultRoles().catch(err => console.error("Error seeding roles:", err));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +55,7 @@ app.use(dashboardRoutes);
 app.use(userRoutes);
 app.use(logRoutes);
 app.use(settingsRoutes);
+app.use(rolesRoutes);
 
 // API routes
 app.use("/api", apiRoutes);

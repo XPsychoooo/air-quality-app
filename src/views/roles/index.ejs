@@ -1,0 +1,75 @@
+<div class="grid-2cols gap-lg align-start">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Daftar Role</h3>
+        </div>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Role ID</th>
+                        <th>Nama Role</th>
+                        <th>Deskripsi</th>
+                        <th>Permissions</th>
+                        <th>Dibuat</th>
+                        <th>Diperbarui</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!roles || !roles.length) { %>
+                        <tr>
+                            <td colspan="6" class="text-center">Belum ada role</td>
+                        </tr>
+                        <% } else { %>
+                            <% roles.forEach(function(r) { %>
+                                <tr>
+                                    <td style="font-size: 12px; font-family: monospace; color: var(--text-muted);">
+                                        <%= r.role_id ? r.role_id.substring(0, 8) + '...' : '-' %>
+                                    </td>
+                                    <td><span class="badge badge-info">
+                                            <%= r.role_name %>
+                                        </span></td>
+                                    <td>
+                                        <%= r.description || '-' %>
+                                    </td>
+                                    <td
+                                        style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-family: monospace;">
+                                        <%= r.permissions || '{}' %>
+                                    </td>
+                                    <td>
+                                        <%= r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-' %>
+                                    </td>
+                                    <td>
+                                        <%= r.updated_at ? new Date(r.updated_at).toLocaleDateString('id-ID') : '-' %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Tambah Role</h3>
+        </div>
+        <form method="post" action="/roles" class="form-vertical">
+            <label>
+                <span>Nama Role</span>
+                <input type="text" name="role_name" placeholder="Contoh: MANAGER" required />
+            </label>
+            <label>
+                <span>Deskripsi</span>
+                <input type="text" name="description" placeholder="Deskripsi peran" />
+            </label>
+            <label>
+                <span>Permissions (JSON)</span>
+                <textarea name="permissions" rows="5"
+                    style="width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--border-color); font-family:monospace; font-size:13px; resize:vertical;"
+                    placeholder='{"dashboard":true,"monitoring":true}'></textarea>
+            </label>
+            <button type="submit" class="btn-primary w-full">Simpan</button>
+        </form>
+    </div>
+</div>
