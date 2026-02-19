@@ -1,0 +1,108 @@
+<div class="card">
+    <div class="card-header"
+        style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h3 class="card-title">Manajemen Sesi Aktif</h3>
+        <form method="post" action="/sessions/clean-expired" style="margin:0;">
+            <button type="submit" class="btn-secondary"
+                onclick="return confirm('Bersihkan semua sesi yang sudah expired?')">🧹 Bersihkan Expired</button>
+        </form>
+    </div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Session ID</th>
+                    <th>Pengguna</th>
+                    <th>IP Address</th>
+                    <th>Browser / Device</th>
+                    <th>Status</th>
+                    <th>Login</th>
+                    <th>Aktivitas Terakhir</th>
+                    <th>Kadaluarsa</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!sessions || !sessions.length) { %>
+                    <tr>
+                        <td colspan="9" class="text-center">Belum ada data sesi</td>
+                    </tr>
+                    <% } else { %>
+                        <% sessions.forEach(function(s) { %>
+                            <% const now=Date.now(); %>
+                                <% const isExpired=s.expires_at && s.expires_at < now; %>
+                                    <% const isActive=s.is_active && !isExpired; %>
+                                        <tr style="<%= !isActive ? 'opacity: 0.6;' : '' %>">
+                                            <td
+                                                style="font-size: 12px; font-family: monospace; color: var(--text-muted);">
+                                                <%= s.session_id ? s.session_id.substring(0, 8) + '...' : '-' %>
+                                            </td>
+                                            <td><strong>
+                                                    <%= s.user_name || '-' %>
+                                                </strong></td>
+                                            <td style="font-family: monospace; font-size: 13px;">
+                                                <%= s.ip_address || '-' %>
+                                            </td>
+                                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px;"
+                                                title="<%= s.user_agent || '' %>">
+                                                <% if (s.user_agent) { %>
+                                                    <% const ua=s.user_agent; %>
+                                                        <% if (ua.includes('Chrome')) { %>🌐 Chrome
+                                                            <% } else if (ua.includes('Firefox')) { %>🦊 Firefox
+                                                                <% } else if (ua.includes('Safari')) { %>🧭 Safari
+                                                                    <% } else if (ua.includes('Edge')) { %>🔵 Edge
+                                                                        <% } else { %>
+                                                                            <%= ua.substring(0, 30) %>...
+                                                                                <% } %>
+                                                                                    <% } else { %>-<% } %>
+                                            </td>
+                                            <td>
+                                                <% if (isActive) { %>
+                                                    <span class="badge"
+                                                        style="background: rgba(16,185,129,0.1); color: #10b981;">🟢
+                                                        Aktif</span>
+                                                    <% } else if (isExpired) { %>
+                                                        <span class="badge"
+                                                            style="background: rgba(245,158,11,0.1); color: #f59e0b;">⏰
+                                                            Expired</span>
+                                                        <% } else { %>
+                                                            <span class="badge badge-danger">🔴 Tidak Aktif</span>
+                                                            <% } %>
+                                            </td>
+                                            <td style="font-size: 13px;">
+                                                <%= s.created_at ? new Date(s.created_at).toLocaleString('id-ID') : '-'
+                                                    %>
+                                            </td>
+                                            <td style="font-size: 13px;">
+                                                <%= s.last_activity ? new Date(s.last_activity).toLocaleString('id-ID')
+                                                    : '-' %>
+                                            </td>
+                                            <td style="font-size: 13px;">
+                                                <%= s.expires_at ? new Date(s.expires_at).toLocaleString('id-ID') : '-'
+                                                    %>
+                                            </td>
+                                            <td style="white-space: nowrap;">
+                                                <% if (isActive) { %>
+                                                    <form method="post"
+                                                        action="/sessions/<%= s.session_id %>/invalidate"
+                                                        style="display:inline;"
+                                                        onsubmit="return confirm('Force logout sesi ini?')">
+                                                        <button type="submit" class="btn-action btn-delete"
+                                                            title="Force Logout">⛔</button>
+                                                    </form>
+                                                    <% } %>
+                                                        <form method="post"
+                                                            action="/sessions/<%= s.session_id %>/delete"
+                                                            style="display:inline;"
+                                                            onsubmit="return confirm('Hapus permanen sesi ini?')">
+                                                            <button type="submit" class="btn-action btn-delete"
+                                                                title="Hapus">🗑️</button>
+                                                        </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
