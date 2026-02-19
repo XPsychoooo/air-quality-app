@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { findUserByEmailOrUsername } = require("../services/userService");
 const { logActivity } = require("../services/logService");
+const { createSession, invalidateSession } = require("../services/sessionService");
 
 const router = express.Router();
 
@@ -48,6 +49,9 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    const expiresInMs = 8 * 60 * 60 * 1000; // 8 hours
+    const expires_at = Date.now() + expiresInMs;
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -59,12 +63,26 @@ router.post("/login", async (req, res) => {
       { expiresIn: "8h" }
     );
 
+    // Save session to database (proposal table: sessions)
+    await createSession({
+      user_id: user.id,
+      token,
+      ip_address: req.ip || req.connection?.remoteAddress || "unknown",
+      user_agent: req.headers["user-agent"] || null,
+      expires_at,
+    });
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 8 * 60 * 60 * 1000,
+      maxAge: expiresInMs,
     });
+
+    // Update last_login on user
+    const { getDatabase } = require("../config/firebase");
+    const db = getDatabase();
+    await db.ref(`users/${user.id}`).update({ last_login: Date.now() });
 
     await logActivity({
       user_id: user.id,
@@ -87,7 +105,13 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", async (req, res) => {
+  const token = req.cookies?.token;
   const user = req.user;
+
+  // Invalidate session in database
+  if (token) {
+    await invalidateSession(token).catch(err => console.error("Error invalidating session:", err));
+  }
 
   res.clearCookie("token");
 
@@ -106,4 +130,3 @@ router.post("/logout", async (req, res) => {
 });
 
 module.exports = router;
-

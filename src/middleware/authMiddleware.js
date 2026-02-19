@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const { getSessionByToken, updateLastActivity } = require("../services/sessionService");
 
-// Middleware untuk memeriksa JWT pada cookie / header
+// Middleware untuk memeriksa JWT pada cookie / header + validate session
 function authRequired(req, res, next) {
   const token =
     req.cookies?.token ||
@@ -15,6 +16,20 @@ function authRequired(req, res, next) {
     const payload = jwt.verify(token, process.env.JWT_SECRET || "dev-secret");
     req.user = payload;
     res.locals.user = payload;
+
+    // Validate session in database and update last_activity (async, non-blocking)
+    getSessionByToken(token)
+      .then(session => {
+        if (session) {
+          // Check if session is expired
+          if (session.expires_at && session.expires_at < Date.now()) {
+            return; // expired, will be cleaned up by cleanExpiredSessions
+          }
+          updateLastActivity(session.session_id).catch(() => { });
+        }
+      })
+      .catch(() => { });
+
     next();
   } catch (err) {
     console.error("JWT error:", err.message);
@@ -42,4 +57,3 @@ module.exports = {
   authRequired,
   roleRequired,
 };
-
